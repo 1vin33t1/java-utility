@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <artifactId>java-utility</artifactId>
+        <groupId>com.xyz.utility</groupId>
+        <version>${revision}</version>
+    </parent>
+
+    <artifactId>utility-persistence</artifactId>
+
+    <properties>
+        <sonar.coverage.exclusions>
+            **/config/*,
+            **/model/*,
+            **/repository/aerospike/*
+        </sonar.coverage.exclusions>
+        <java.version>11</java.version>
+    </properties>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>com.aerospike</groupId>
+            <artifactId>spring-data-aerospike</artifactId>
+            <version>2.4.2.RELEASE</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+</project>

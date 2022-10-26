@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <springProperty name="active.profile" scope="context" source="spring.profiles.active"/>
+    <springProperty name="application.name" scope="context" source="spring.application.name"/>
+    <springProperty name="app.mode" scope="context" source="app.mode"/>
+    <springProperty name="log.file.location" scope="context" source="log_path"/>
+
+    <appender class="ch.qos.logback.core.rolling.RollingFileAppender" name="app-file">
+        <file>${log.file.location}/${application.name}-${app.mode}-app.log</file>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <Pattern>[%d{dd-MM-yyyy HH:mm:ss.SSS}] traceId=%X{traceId}, spanId=%X{spanId}, [%-5p] [%t] [an=${application.name}] [%logger{}] - %msg%n
+            </Pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${log.file.location}/archive/${application.name}-${app.mode}-app.%d{yyyy-MM-dd}.%i.log.gz
+            </fileNamePattern>
+            <maxFileSize>512MB</maxFileSize>
+        </rollingPolicy>
+    </appender>
+
+    <appender class="ch.qos.logback.classic.AsyncAppender" name="async">
+        <appender-ref ref="app-file"/>
+    </appender>
+
+    <logger additivity="false" level="DEBUG" name="com.xyz.utility">
+        <appender-ref ref="async"/>
+    </logger>
+
+    <logger additivity="false" level="ERROR" name="io.jaegertracing">
+        <appender-ref ref="async"/>
+    </logger>
+
+    <root level="INFO">
+        <appender-ref ref="async"/>
+    </root>
+
+</configuration>

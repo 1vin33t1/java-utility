@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <springProperty name="active.profile" scope="context" source="spring.profiles.active"/>
+    <springProperty name="application.name" scope="context" source="spring.application.name"/>
+    <springProperty name="app.mode" scope="context" source="app.mode"/>
+    <springProperty name="log.file.location" scope="context" source="log_path"/>
+
+    <appender class="ch.qos.logback.core.rolling.RollingFileAppender" name="app-file">
+        <file>${log.file.location}/${application.name}-${app.mode}-app.log</file>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <Pattern>[%d{dd-MM-yyyy HH:mm:ss.SSS}] traceId=%X{traceId}, spanId=%X{spanId}, [%-5p] [%t] [an=${application.name}] [%logger{}] - %msg%n
+            </Pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${log.file.location}/archive/${application.name}-${app.mode}-app.%d{yyyy-MM-dd}.%i.log.gz
+            </fileNamePattern>
+            <maxFileSize>512MB</maxFileSize>
+        </rollingPolicy>
+    </appender>
+
+    <appender name="Sentry" class="io.sentry.logback.SentryAppender">
+        <options>
+            <dsn>http://77b327e3d874407fa2ca55679e8561de@10.5.31.130:9000/9</dsn>
+            <shutdownTimeout>2000</shutdownTimeout>
+            <flushTimeoutMillis>2000</flushTimeoutMillis>
+            <debug>false</debug>
+            <maxBreadcrumbs>20</maxBreadcrumbs>
+            <release>java_utility@1.0.0</release>
+            <environment>dr</environment>
+            <sampleRate>1.0</sampleRate>
+            <attachThreads>false</attachThreads>
+            <attachStacktrace>true</attachStacktrace>
+            <connectionTimeoutMillis>1000</connectionTimeoutMillis>
+            <readTimeoutMillis>1000</readTimeoutMillis>
+        </options>
+    </appender>
+
+    <appender class="ch.qos.logback.classic.AsyncAppender" name="async">
+        <appender-ref ref="app-file"/>
+    </appender>
+
+    <logger additivity="false" level="DEBUG" name="com.xyz.utility">
+        <appender-ref ref="async"/>
+        <appender-ref ref="Sentry"/>
+    </logger>
+
+    <root level="INFO">
+        <appender-ref ref="async"/>
+        <appender-ref ref="Sentry"/>
+    </root>
+
+</configuration>
